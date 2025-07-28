@@ -31,4 +31,24 @@ public class RoomRepository : IRoomRepository
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task<Room[]> GetAllRooms() // добавлен метод для получения всех комнат в рамках задания 34.8.3
+    {
+        return await _context.Rooms.ToArrayAsync();
+    }
+
+    public async Task UpdateRoom(Room room, UpdateRoomQuery query) // добавлено в рамках задания 34.8.3
+    {
+        if (!string.IsNullOrEmpty(query.NewName))
+            room.Name = query.NewName;
+        if (query.NewVoltage != 0)
+            room.Voltage = query.NewVoltage;
+        room.GasConnected = query.NewGasConnected;
+
+        var entry = _context.Entry(room);
+        if (entry.State == EntityState.Detached)
+            _context.Rooms.Update(room);
+
+        await _context.SaveChangesAsync();
+    }
 }
